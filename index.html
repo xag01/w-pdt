@@ -2,30 +2,88 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>index.html</title>
+<title>Pomodoro</title>
+
 <style>
-body {
-    font-family: system-ui, sans-serif;
-    text-align: center;
-    margin-top: 100px;
+:root {
+    --work: #e74c3c;
+    --short: #27ae60;
+    --long: #2980b9;
 }
 
-#timer {
-    font-size: 64px;
-    margin: 20px;
+body {
+    font-family: system-ui, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 60px;
+    transition: background-color 0.6s ease;
+    background-color: var(--work);
+    color: white;
+}
+
+h1 {
+    margin-bottom: 20px;
+}
+
+.timer-container {
+    position: relative;
+    width: 220px;
+    height: 220px;
+}
+
+svg {
+    transform: rotate(-90deg);
+}
+
+circle {
+    fill: none;
+    stroke-width: 12;
+}
+
+#progress-bg {
+    stroke: rgba(255,255,255,0.2);
+}
+
+#progress-ring {
+    stroke: white;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 1s linear;
+}
+
+#timeLabel {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 40px;
 }
 
 button {
-    padding: 10px 20px;
     margin: 5px;
-    font-size: 16px;
+    padding: 8px 16px;
+    font-size: 14px;
+}
+
+.settings {
+    margin-top: 30px;
+    font-size: 14px;
+    text-align: center;
 }
 </style>
 </head>
+
 <body>
 
 <h1 id="mode">Work</h1>
-<div id="timer">25:00</div>
+
+<div class="timer-container">
+    <svg width="220" height="220">
+        <circle id="progress-bg" cx="110" cy="110" r="90"></circle>
+        <circle id="progress-ring" cx="110" cy="110" r="90"></circle>
+    </svg>
+    <div id="timeLabel">25:00</div>
+</div>
 
 <div>
     <button onclick="startTimer()">Start</button>
@@ -33,87 +91,149 @@ button {
     <button onclick="resetTimer()">Reset</button>
 </div>
 
-<div style="margin-top:30px;">
-    Work (min): <input id="workInput" type="number" min="1" value="25">
-    Break (min): <input id="breakInput" type="number" min="1" value="5">
+<div class="settings">
+    <div>Work <input id="workInput" type="number" min="1" value="25"> min</div>
+    <div>Short <input id="shortInput" type="number" min="1" value="5"> min</div>
+    <div>Long <input id="longInput" type="number" min="1" value="15"> min</div>
+    <div>Sessions before long <input id="intervalInput" type="number" min="1" value="4"></div>
     <button onclick="saveSettings()">Save</button>
 </div>
 
 <script>
-let timer;
-let timeRemaining;
+let timerInterval = null;
+let timeRemaining = 0;
+let totalTime = 0;
 let isRunning = false;
-let isWorkMode = true;
 
-const timerDisplay = document.getElementById("timer");
-const modeDisplay = document.getElementById("mode");
+let currentMode = "work";
+let workSessionsCompleted = 0;
+
+const ring = document.getElementById("progress-ring");
+const radius = 90;
+const circumference = 2 * Math.PI * radius;
+
+ring.style.strokeDasharray = circumference;
+ring.style.strokeDashoffset = 0;
+
+function getSettings() {
+    return {
+        work: parseInt(workInput.value),
+        short: parseInt(shortInput.value),
+        long: parseInt(longInput.value),
+        interval: parseInt(intervalInput.value)
+    };
+}
 
 function loadSettings() {
-    const work = localStorage.getItem("workDuration");
-    const brk = localStorage.getItem("breakDuration");
-
-    document.getElementById("workInput").value = work || 25;
-    document.getElementById("breakInput").value = brk || 5;
-
-    setInitialTime();
+    const saved = JSON.parse(localStorage.getItem("pomodoroSettings"));
+    if (saved) {
+        workInput.value = saved.work;
+        shortInput.value = saved.short;
+        longInput.value = saved.long;
+        intervalInput.value = saved.interval;
+    }
+    setTimeForMode();
 }
 
 function saveSettings() {
-    localStorage.setItem("workDuration", document.getElementById("workInput").value);
-    localStorage.setItem("breakDuration", document.getElementById("breakInput").value);
-    setInitialTime();
+    localStorage.setItem("pomodoroSettings", JSON.stringify(getSettings()));
+    resetTimer();
 }
 
-function setInitialTime() {
-    const work = parseInt(document.getElementById("workInput").value);
-    const brk = parseInt(document.getElementById("breakInput").value);
+function setTheme() {
+    const root = document.documentElement;
+    const body = document.body;
 
-    timeRemaining = (isWorkMode ? work : brk) * 60;
+    if (currentMode === "work") {
+        body.style.backgroundColor = getComputedStyle(root).getPropertyValue("--work");
+    } else if (currentMode === "short") {
+        body.style.backgroundColor = getComputedStyle(root).getPropertyValue("--short");
+    } else {
+        body.style.backgroundColor = getComputedStyle(root).getPropertyValue("--long");
+    }
+}
+
+function setTimeForMode() {
+    const settings = getSettings();
+
+    if (currentMode === "work") {
+        timeRemaining = settings.work * 60;
+        mode.textContent = "Work";
+    } else if (currentMode === "short") {
+        timeRemaining = settings.short * 60;
+        mode.textContent = "Short Break";
+    } else {
+        timeRemaining = settings.long * 60;
+        mode.textContent = "Long Break";
+    }
+
+    totalTime = timeRemaining;
+    setTheme();
     updateDisplay();
 }
 
 function updateDisplay() {
     const minutes = Math.floor(timeRemaining / 60);
     const seconds = timeRemaining % 60;
-    timerDisplay.textContent =
+
+    const formatted =
         `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+
+    document.getElementById("timeLabel").textContent = formatted;
+    document.title = formatted + " - " + mode.textContent;
+
+    const progress = timeRemaining / totalTime;
+    const offset = circumference * (1 - progress);
+    ring.style.strokeDashoffset = offset;
 }
 
 function startTimer() {
     if (isRunning) return;
     isRunning = true;
 
-    timer = setInterval(() => {
+    timerInterval = setInterval(() => {
         if (timeRemaining > 0) {
             timeRemaining--;
             updateDisplay();
         } else {
-            switchMode();
+            nextSession();
         }
     }, 1000);
 }
 
 function pauseTimer() {
     isRunning = false;
-    clearInterval(timer);
+    clearInterval(timerInterval);
 }
 
 function resetTimer() {
     pauseTimer();
-    setInitialTime();
+    setTimeForMode();
 }
 
-function switchMode() {
+function nextSession() {
     pauseTimer();
-    isWorkMode = !isWorkMode;
-    modeDisplay.textContent = isWorkMode ? "Work" : "Break";
-    setInitialTime();
+    const settings = getSettings();
+
+    if (currentMode === "work") {
+        workSessionsCompleted++;
+        if (workSessionsCompleted % settings.interval === 0) {
+            currentMode = "long";
+        } else {
+            currentMode = "short";
+        }
+    } else {
+        currentMode = "work";
+    }
+
     notifyUser();
+    setTimeForMode();
+    startTimer();
 }
 
 function notifyUser() {
-    if (Notification.permission === "granted") {
-        new Notification(isWorkMode ? "Back to Work!" : "Time for a Break!");
+    if ("Notification" in window && Notification.permission === "granted") {
+        new Notification(mode.textContent + " started");
     }
 }
 
