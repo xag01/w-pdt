@@ -118,7 +118,7 @@ button { margin: 5px; padding: 8px 16px; font-size: 14px; }
         <input id="longSec" type="number" min="0" max="59" value="0"> sec
     </div>
     <div>
-        Sessions before long
+        Work Sessions before long break
         <input id="intervalInput" type="number" min="1" value="4">
     </div>
 
@@ -269,7 +269,7 @@ function loadSettings() {
 
 function saveSettings() {
     localStorage.setItem("pomodoroSettings", JSON.stringify(getSettings()));
-    resetToStart();
+    //resetToStart();
 }
 
 // ------------------
