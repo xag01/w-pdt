@@ -47,42 +47,47 @@ body{
   gap:clamp(12px, 2vh, 24px);
 }
 
-.header{
-  width:100%;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:clamp(6px, 1.5vh, 18px);
-  flex-shrink:0;
-  background:red;
-}
-}
-  
-.header > div{
-  display:flex;
-  flex-direction:row;
-  align-items:center;
-  gap:clamp(6px, 1vh, 12px);
+.header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: clamp(2px, 1vh, 12px) clamp(4px, 2vw, 16px);
+  gap: clamp(4px, 1vh, 12px);
+  flex-shrink: 0;
+  min-height: 0; /* allow shrinking */
 }
   
-h1{
-  font-size:clamp(14px, 2.8vh, 28px);
-  margin:0;
-  line-height:1;
+.header > div {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: clamp(4px, 1vh, 10px);
+  flex-shrink: 1;   /* allow shrinking */
+  white-space: nowrap;
+}
+  
+.header h1 {
+  margin: 0;
+  font-size: clamp(12px, 2.5vh, 26px);
+  line-height: 1;      /* critical to avoid extra space */
+  flex-shrink: 1;      /* allow shrinking */
+  white-space: nowrap; /* prevent wrapping */
 }
 
-.icon-btn{
-  padding:clamp(4px, 1vh, 10px);
-  border-radius:clamp(6px, 1vh, 12px);
-  display:flex;
-  align-items:center;
-  justify-content:center;
+.icon-btn {
+  padding: clamp(2px, 0.8vh, 8px);
+  border-radius: clamp(4px, 1vh, 12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 1;  /* allow shrinking */
 }
 
-.icon-btn svg{
-  width:clamp(16px, 2.5vh, 26px);
-  height:clamp(16px, 2.5vh, 26px);
-  display:block;   /* VERY IMPORTANT */
+.icon-btn svg {
+  width: clamp(12px, 2vh, 24px);
+  height: clamp(12px, 2vh, 24px);
+  display: block; /* remove baseline spacing */
 }
 
 .timer-container{
@@ -243,7 +248,12 @@ button{
     padding:4px 6px;
   }
 }
-  
+@media (max-height: 380px) {
+  .header h1 { font-size: 12px; }
+  .icon-btn svg { width: 12px; height: 12px; }
+  .icon-btn { padding: 2px 4px; }
+}
+
 </style>
 </head>
 <script src="https://unpkg.com/lucide@latest"></script>
