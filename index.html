@@ -174,16 +174,27 @@ button{
   align-items:center;
 }
 .presetRow button{flex:1;}
+
+.icon-btn i {
+  width:18px;
+  height:18px;
+}
+  
 </style>
 </head>
+<script src="https://unpkg.com/lucide@latest"></script>
 <body>
 
 <div class="app">
   <div class="header">
     <h1 id="mode">Work</h1>
     <div>
-      <button class="icon-btn" onclick="togglePresetPanel()">📦</button>
-      <button class="icon-btn" onclick="toggleSettings()">⚙️</button>
+      <button class="icon-btn" onclick="togglePresetPanel()" aria-label="Presets">
+        <i data-lucide="box"></i>
+      </button>
+      <button class="icon-btn" onclick="toggleSettings()" aria-label="Settings">
+        <i data-lucide="settings"></i>
+      </button>
     </div>
   </div>
 
@@ -808,6 +819,8 @@ autoStart.checked=globalSettings.autoStart;
 
 wireInstantUpdate();
 applyTheme(globalSettings.theme);
+  
+lucide.createIcons();
 </script>
 </body>
 </html>
