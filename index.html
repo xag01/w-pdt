@@ -54,19 +54,21 @@ body{
   align-items:center;
   padding:clamp(6px, 1.5vh, 18px);
   flex-shrink:0;
+  background:red;
+}
 }
   
 .header > div{
   display:flex;
   flex-direction:row;
-  gap:clamp(6px, 1vh, 12px);
   align-items:center;
-  flex-shrink:0;
+  gap:clamp(6px, 1vh, 12px);
 }
   
 h1{
   font-size:clamp(14px, 2.8vh, 28px);
   margin:0;
+  line-height:1;
 }
 
 .icon-btn{
@@ -75,6 +77,12 @@ h1{
   display:flex;
   align-items:center;
   justify-content:center;
+}
+
+.icon-btn svg{
+  width:clamp(16px, 2.5vh, 26px);
+  height:clamp(16px, 2.5vh, 26px);
+  display:block;   /* VERY IMPORTANT */
 }
 
 .timer-container{
@@ -109,8 +117,10 @@ circle{fill:none;stroke-width:12;}
 }
 
 button{
-  font-size:clamp(12px, 2.2vh, 20px);
-  padding:clamp(6px, 1.2vh, 12px) clamp(12px, 2vh, 20px);
+  font-family:inherit;
+  line-height:1;
+  font-size:clamp(12px, 2vh, 20px);
+  padding:clamp(4px, 0.8vh, 10px) clamp(8px, 1.5vh, 16px);
   border:none;
   border-radius:12px;
   cursor:pointer;
