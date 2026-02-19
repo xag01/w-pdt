@@ -30,10 +30,11 @@ body{
   color:var(--text);
   min-height:100vh;
   display:flex;
-  align-items:center;
   justify-content:center;
+  align-items:center;
   background:var(--bg-work);
   transition:background 0.4s ease;
+  overflow:auto;
 }
 
 .app{
@@ -83,7 +84,7 @@ circle{fill:none;stroke-width:12;}
   top:50%;
   left:50%;
   transform:translate(-50%,-50%);
-  font-size:clamp(24px,6vw,42px);
+  font-size:clamp(18px, 8vmin, 48px);
   cursor:pointer;
   user-select:none;
 }
@@ -95,8 +96,8 @@ circle{fill:none;stroke-width:12;}
 }
 
 button{
-  padding:8px 14px;
-  font-size:14px;
+  font-size:clamp(12px, 1.8vmin, 16px);
+  padding:clamp(6px, 1.2vmin, 10px) clamp(10px, 2vmin, 16px);
   border:none;
   border-radius:12px;
   cursor:pointer;
@@ -189,12 +190,18 @@ button{
   height:18px;
 }
 
-@media (max-height:500px){
+@media (max-height:600px){
   .app{
-    justify-content:flex-start;
-    padding-top:20px;
+    gap:12px;
+  }
+  .progressBar{
+    margin-top:6px;
+  }
+  .controls{
+    gap:6px;
   }
 }
+  
 </style>
 </head>
 <script src="https://unpkg.com/lucide@latest"></script>
