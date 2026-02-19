@@ -2,11 +2,15 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Pomodoro</title>
+<title>Focus Timer</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Pomodoro">
+<meta name="apple-mobile-web-app-title" content="Focus Timer">
+<meta name="theme-color" content="#e74c3c">
+
+<link rel="icon" href="icons/icon-32.png">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
 
 <style>
 
@@ -16,70 +20,64 @@
 
 :root {
 
-/* ----- DEFAULT (Pastel) ----- */
+/* ---- DEFAULT THEME ---- */
 --work-bg: #e74c3c;
 --short-bg: #27ae60;
 --long-bg: #2980b9;
---text-color: #ffffff;
---panel-bg: rgba(20,20,20,0.95);
+
+--text: #ffffff;
+--panel-bg: rgba(20,20,20,0.85);
 --panel-border: rgba(255,255,255,0.15);
 --button-bg: rgba(255,255,255,0.2);
---dot-bg: rgba(255,255,255,0.35);
---dot-work: rgba(231,76,60,0.8);
---dot-short: rgba(39,174,96,0.8);
---dot-long: rgba(41,128,185,0.8);
 
-/* ----- BACKGROUND IMAGES ----- */
---bg-image-work: url("assets/background-work.jpg");
---bg-image-short: url("assets/background-short.jpg");
---bg-image-long: url("assets/background-long.jpg");
+/* ---- BACKGROUND IMAGES ---- */
+--bg-work-img: url("assets/background-work.jpg");
+--bg-short-img: url("assets/background-short.jpg");
+--bg-long-img: url("assets/background-long.jpg");
 
-/* Decorative overlay */
---decor-image: url("assets/decor-corner.png");
+--decor-img: url("assets/decor.png");
 
 }
 
 /* ==================================================
-   BASE LAYOUT
+   BASE
 ================================================== */
 
 * { box-sizing: border-box; }
 
 body {
-  margin: 0;
+  margin:0;
   font-family: system-ui, -apple-system, sans-serif;
-  color: var(--text-color);
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  color: var(--text);
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
   transition: background 0.4s ease;
-  overflow: hidden;
+  overflow:hidden;
 }
 
-/* Background image layer */
+/* Background layers */
 .bg-image {
-  position: fixed;
-  inset: 0;
-  background-size: cover;
-  background-position: center;
-  opacity: 0.35;
-  z-index: -2;
+  position:fixed;
+  inset:0;
+  background-size:cover;
+  background-position:center;
+  opacity:0.35;
+  z-index:-2;
 }
 
-/* Decorative overlay */
 .bg-decor {
-  position: fixed;
-  width: 300px;
-  height: 300px;
-  background-image: var(--decor-image);
-  background-size: contain;
-  background-repeat: no-repeat;
-  opacity: 0.15;
-  bottom: -40px;
-  right: -40px;
-  pointer-events: none;
-  z-index: -1;
+  position:fixed;
+  width:300px;
+  height:300px;
+  bottom:-40px;
+  right:-40px;
+  background-image:var(--decor-img);
+  background-size:contain;
+  background-repeat:no-repeat;
+  opacity:0.15;
+  z-index:-1;
 }
 
 /* ==================================================
@@ -87,24 +85,24 @@ body {
 ================================================== */
 
 .app {
-  width: min(520px, 92vw);
-  min-height: 520px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  border-radius: 22px;
-  padding: 24px;
-  backdrop-filter: blur(20px);
-  background: rgba(0,0,0,0.25);
+  width:min(520px,92vw);
+  min-height:520px;
+  padding:24px;
+  border-radius:24px;
+  background:rgba(0,0,0,0.25);
+  backdrop-filter:blur(18px);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  position:relative;
 }
 
-/* Wide layout */
-@media (min-width: 900px) {
+@media (min-width: 900px){
   .app {
-    flex-direction: row;
-    gap: 40px;
-    width: min(900px, 90vw);
+    flex-direction:row;
+    gap:60px;
+    width:min(900px,90vw);
   }
 }
 
@@ -112,107 +110,113 @@ body {
    HEADER
 ================================================== */
 
-.header {
-  position: absolute;
-  top: 16px;
-  left: 20px;
-  right: 20px;
-  display: flex;
-  justify-content: space-between;
+.header{
+  position:absolute;
+  top:20px;
+  left:20px;
+  right:20px;
+  display:flex;
+  justify-content:space-between;
 }
 
-.icon-btn {
-  background: var(--button-bg);
-  border: none;
-  color: var(--text-color);
-  padding: 6px 12px;
-  border-radius: 12px;
-  cursor: pointer;
+.icon-btn{
+  background:var(--button-bg);
+  border:none;
+  padding:6px 12px;
+  border-radius:14px;
+  color:var(--text);
+  cursor:pointer;
 }
 
 /* ==================================================
    TIMER
 ================================================== */
 
-.timer-container {
-  width: min(260px, 70vw);
-  height: min(260px, 70vw);
-  position: relative;
+.timer-container{
+  width:min(260px,70vw);
+  height:min(260px,70vw);
+  position:relative;
 }
 
-svg {
-  width: 100%;
-  height: 100%;
-  transform: rotate(-90deg);
+svg{
+  width:100%;
+  height:100%;
+  transform:rotate(-90deg);
 }
 
-circle {
-  fill: none;
-  stroke-width: 12;
+circle{
+  fill:none;
+  stroke-width:12;
 }
 
-#progress-bg {
-  stroke: rgba(255,255,255,0.2);
+#progress-bg{
+  stroke:rgba(255,255,255,0.2);
 }
 
-#progress-ring {
-  stroke: var(--text-color);
-  stroke-linecap: round;
-  transition: stroke-dashoffset 1s linear;
+#progress-ring{
+  stroke:var(--text);
+  stroke-linecap:round;
+  transition:stroke-dashoffset 1s linear;
 }
 
-#timeLabel {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%,-50%);
-  font-size: clamp(24px,6vw,42px);
-  cursor: pointer;
+#timeLabel{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  font-size:clamp(28px,6vw,46px);
+  cursor:pointer;
+  user-select:none;
 }
 
 /* ==================================================
    CONTROLS
 ================================================== */
 
-.controls {
-  margin-top: 20px;
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  justify-content: center;
+.controls{
+  margin-top:24px;
+  display:flex;
+  gap:14px;
+  flex-wrap:wrap;
+  justify-content:center;
 }
 
-button {
-  padding: 8px 16px;
-  border-radius: 14px;
-  border: none;
-  background: var(--button-bg);
-  color: var(--text-color);
-  cursor: pointer;
+button{
+  padding:8px 16px;
+  border:none;
+  border-radius:14px;
+  background:var(--button-bg);
+  color:var(--text);
+  cursor:pointer;
 }
 
 /* ==================================================
-   PANELS
+   SETTINGS PANEL
 ================================================== */
 
-.settingsPanel, .presetPanel {
-  position: fixed;
-  inset: 0;
-  margin: auto;
-  width: min(460px, 90vw);
-  background: var(--panel-bg);
-  border: 1px solid var(--panel-border);
-  border-radius: 20px;
-  padding: 20px;
-  display: none;
-  flex-direction: column;
-  gap: 14px;
-  z-index: 100;
+.panel{
+  position:fixed;
+  inset:0;
+  margin:auto;
+  width:min(460px,90vw);
+  background:var(--panel-bg);
+  border:1px solid var(--panel-border);
+  border-radius:20px;
+  padding:20px;
+  display:none;
+  flex-direction:column;
+  gap:14px;
+  z-index:10;
 }
 
-.settingsPanel.open,
-.presetPanel.open {
-  display: flex;
+.panel.open{ display:flex; }
+
+.panel input, .panel select{
+  padding:8px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,0.2);
+  background:rgba(255,255,255,0.1);
+  color:white;
 }
 
 </style>
@@ -225,18 +229,15 @@ button {
 <div class="app">
 
   <div class="header">
-    <h1 id="mode">Work</h1>
-    <div>
-      <button class="icon-btn" onclick="togglePresetPanel()">📦</button>
-      <button class="icon-btn" onclick="toggleSettings()">⚙️</button>
-    </div>
+    <h1 id="modeLabel">Work</h1>
+    <button class="icon-btn" onclick="toggleSettings()">⚙️</button>
   </div>
 
   <div>
     <div class="timer-container">
       <svg viewBox="0 0 220 220">
-        <circle id="progress-bg" cx="110" cy="110" r="90"></circle>
-        <circle id="progress-ring" cx="110" cy="110" r="90"></circle>
+        <circle cx="110" cy="110" r="90" id="progress-bg"></circle>
+        <circle cx="110" cy="110" r="90" id="progress-ring"></circle>
       </svg>
       <div id="timeLabel">25:00</div>
     </div>
@@ -250,35 +251,205 @@ button {
 
 </div>
 
+<div class="panel" id="settingsPanel">
+  <button onclick="toggleSettings()">Close</button>
+
+  <label>Work (minutes)
+    <input id="workInput" type="number" value="25">
+  </label>
+
+  <label>Short Break (minutes)
+    <input id="shortInput" type="number" value="5">
+  </label>
+
+  <label>Long Break (minutes)
+    <input id="longInput" type="number" value="15">
+  </label>
+
+  <label>Sessions before long break
+    <input id="intervalInput" type="number" value="4">
+  </label>
+
+  <label>
+    <input type="checkbox" id="autoStart"> Auto start next
+  </label>
+
+  <label>Sound
+    <select id="soundSelect">
+      <option value="none">None</option>
+      <option value="classic">Classic</option>
+      <option value="soft">Soft</option>
+    </select>
+  </label>
+
+</div>
+
 <script>
 
 /* ==================================================
-   BACKGROUND SWITCHING
+   STATE
 ================================================== */
 
-function updateBackground(mode){
-  const bg = document.getElementById("bgImage");
+let mode = "work";
+let timer = null;
+let timeRemaining = 25*60;
+let totalTime = 25*60;
+let running = false;
+let completed = 0;
+
+/* ==================================================
+   ELEMENTS
+================================================== */
+
+const ring = document.getElementById("progress-ring");
+const radius = 90;
+const circumference = 2*Math.PI*radius;
+ring.style.strokeDasharray = circumference;
+
+const timeLabel = document.getElementById("timeLabel");
+const startPauseBtn = document.getElementById("startPauseBtn");
+const modeLabel = document.getElementById("modeLabel");
+
+const workInput = document.getElementById("workInput");
+const shortInput = document.getElementById("shortInput");
+const longInput = document.getElementById("longInput");
+const intervalInput = document.getElementById("intervalInput");
+const autoStart = document.getElementById("autoStart");
+const soundSelect = document.getElementById("soundSelect");
+
+/* ==================================================
+   TIMER LOGIC
+================================================== */
+
+function startTimer(){
+  if(running) return;
+  running = true;
+  startPauseBtn.textContent = "Pause";
+
+  timer = setInterval(()=>{
+    if(timeRemaining > 0){
+      timeRemaining--;
+      updateDisplay();
+    } else {
+      nextSession();
+    }
+  },1000);
+}
+
+function pauseTimer(){
+  running = false;
+  startPauseBtn.textContent = "Start";
+  clearInterval(timer);
+}
+
+startPauseBtn.onclick = ()=> running ? pauseTimer() : startTimer();
+
+function resetTimer(){
+  pauseTimer();
+  setMode(mode);
+}
+
+function skipSession(){
+  pauseTimer();
+  nextSession();
+}
+
+function nextSession(){
+  playSound();
 
   if(mode === "work"){
-    document.body.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--work-bg');
-    bg.style.backgroundImage = getComputedStyle(document.documentElement).getPropertyValue('--bg-image-work');
+    completed++;
+    if(completed >= intervalInput.value){
+      setMode("long");
+      completed = 0;
+    } else {
+      setMode("short");
+    }
+  } else {
+    setMode("work");
   }
-  else if(mode === "short"){
-    document.body.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--short-bg');
-    bg.style.backgroundImage = getComputedStyle(document.documentElement).getPropertyValue('--bg-image-short');
-  }
-  else {
-    document.body.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--long-bg');
-    bg.style.backgroundImage = getComputedStyle(document.documentElement).getPropertyValue('--bg-image-long');
-  }
+
+  if(autoStart.checked) startTimer();
 }
 
 /* ==================================================
-   REMOVE NOTIFICATIONS COMPLETELY
+   MODE SWITCHING
 ================================================== */
-/* All notification logic removed intentionally */
 
-updateBackground("work");
+function setMode(newMode){
+  mode = newMode;
+
+  if(mode==="work"){
+    totalTime = workInput.value * 60;
+    modeLabel.textContent = "Work";
+    document.body.style.background = getComputedStyle(document.documentElement).getPropertyValue('--work-bg');
+    bgImage.style.backgroundImage = getComputedStyle(document.documentElement).getPropertyValue('--bg-work-img');
+  }
+  else if(mode==="short"){
+    totalTime = shortInput.value * 60;
+    modeLabel.textContent = "Short Break";
+    document.body.style.background = getComputedStyle(document.documentElement).getPropertyValue('--short-bg');
+    bgImage.style.backgroundImage = getComputedStyle(document.documentElement).getPropertyValue('--bg-short-img');
+  }
+  else {
+    totalTime = longInput.value * 60;
+    modeLabel.textContent = "Long Break";
+    document.body.style.background = getComputedStyle(document.documentElement).getPropertyValue('--long-bg');
+    bgImage.style.backgroundImage = getComputedStyle(document.documentElement).getPropertyValue('--bg-long-img');
+  }
+
+  timeRemaining = totalTime;
+  updateDisplay();
+}
+
+/* ==================================================
+   DISPLAY
+================================================== */
+
+function updateDisplay(){
+  const m = String(Math.floor(timeRemaining/60)).padStart(2,"0");
+  const s = String(timeRemaining%60).padStart(2,"0");
+  timeLabel.textContent = `${m}:${s}`;
+
+  const progress = timeRemaining / totalTime;
+  ring.style.strokeDashoffset = circumference*(1-progress);
+}
+
+/* ==================================================
+   SOUND
+================================================== */
+
+function playSound(){
+  if(soundSelect.value==="none") return;
+
+  const ctx = new (window.AudioContext || window.webkitAudioContext)();
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+
+  osc.frequency.value = soundSelect.value==="soft" ? 600 : 900;
+  gain.gain.setValueAtTime(0.2, ctx.currentTime);
+
+  osc.start();
+  osc.stop(ctx.currentTime + 0.2);
+}
+
+/* ==================================================
+   SETTINGS PANEL
+================================================== */
+
+function toggleSettings(){
+  document.getElementById("settingsPanel").classList.toggle("open");
+}
+
+/* ==================================================
+   INIT
+================================================== */
+
+const bgImage = document.getElementById("bgImage");
+setMode("work");
 
 </script>
 </body>
