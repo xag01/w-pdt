@@ -86,8 +86,8 @@ body {
 }
 
 .icon-btn svg {
-  width: clamp(12px, 2vh, 24px);
-  height: clamp(12px, 2vh, 24px);
+  width: clamp(14px, 3vh, 28px);
+  height: clamp(14px, 3vh, 28px);
   display: block; /* remove baseline spacing */
 }
 
@@ -125,8 +125,8 @@ circle{fill:none;stroke-width:12;}
 button{
   font-family:inherit;
   line-height:1;
-  font-size:clamp(12px, 2vh, 20px);
-  padding:clamp(4px, 0.8vh, 10px) clamp(8px, 1.5vh, 16px);
+  font-size: clamp(12px, 2.2vh, 22px); /* min 12px, scales with viewport height, max 22px */
+  padding: clamp(4px, 1vh, 14px) clamp(8px, 2vw, 20px); /* vertical | horizontal */
   border:none;
   border-radius:12px;
   cursor:pointer;
