@@ -230,10 +230,6 @@ button{
     </label>
 
     <label class="rowFull">
-      <input id="notifToggle" type="checkbox" checked> Notifications
-    </label>
-
-    <label class="rowFull">
       <input id="autoStart" type="checkbox"> Auto start next session
     </label>
   </div>
@@ -356,7 +352,6 @@ const intervalInput = document.getElementById("intervalInput");
 
 const themePreset = document.getElementById("themePreset");
 const autoStart = document.getElementById("autoStart");
-const notifToggle = document.getElementById("notifToggle");
 const soundPreset = document.getElementById("soundPreset");
 
 const progressBar = document.getElementById("progressBar");
@@ -406,7 +401,6 @@ function loadStorage(){
     globalSettings = {
       autoStart:false,
       soundPreset:"classic",
-      notifications:true,
       theme:"default"
     };
   }
@@ -616,7 +610,6 @@ function nextSession(endedNaturally=true, forcedMode=null){
   renderProgressBar();
   updateSessionIndicator();
 
-  if(globalSettings.notifications) notifyUser();
   if(globalSettings.autoStart) startTimer();
 }
 
@@ -641,12 +634,6 @@ function playModeSound(mode){
     else playTone(600,0.12);
   }
 }
-function notifyUser(){
-  if("Notification" in window && Notification.permission==="granted"){
-    new Notification(mode.textContent + " started");
-  }
-}
-if("Notification" in window) Notification.requestPermission();
 
 /* -------------------------
    PROGRESS BAR
@@ -758,13 +745,12 @@ function wireInstantUpdate(){
     applyTimerSettings(getTimersFromInputs());
   }));
 
-  const globalInputs=[themePreset, soundPreset, notifToggle, autoStart];
+  const globalInputs=[themePreset, soundPreset, autoStart];
   globalInputs.forEach(el=>el.addEventListener("change",()=>{
     globalSettings = {
       ...globalSettings,
       theme: themePreset.value,
       soundPreset: soundPreset.value,
-      notifications: notifToggle.checked,
       autoStart: autoStart.checked
     };
     applyTheme(globalSettings.theme);
@@ -818,7 +804,6 @@ loadPreset(activePresetId);
 
 themePreset.value=globalSettings.theme;
 soundPreset.value=globalSettings.soundPreset;
-notifToggle.checked=globalSettings.notifications;
 autoStart.checked=globalSettings.autoStart;
 
 wireInstantUpdate();
