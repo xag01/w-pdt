@@ -9,176 +9,221 @@
 <meta name="apple-mobile-web-app-title" content="Pomodoro">
 
 <style>
-:root{
-  --bg-work:#e74c3c;
-  --bg-short:#27ae60;
-  --bg-long:#2980b9;
-  --text:#fff;
-  --panel-bg:rgba(20,20,20,0.95);
-  --panel-border:rgba(255,255,255,0.15);
-  --button-bg:rgba(255,255,255,0.2);
-  --dot-bg:rgba(255,255,255,0.35);
-  --dot-work:rgba(231,76,60,0.8);
-  --dot-short:rgba(39,174,96,0.8);
-  --dot-long:rgba(41,128,185,0.8);
+
+/* ==================================================
+   🎨 COLOR PALETTES — EDIT COLORS ONLY HERE
+================================================== */
+
+:root {
+
+/* ----- DEFAULT (Pastel) ----- */
+--work-bg: #e74c3c;
+--short-bg: #27ae60;
+--long-bg: #2980b9;
+--text-color: #ffffff;
+--panel-bg: rgba(20,20,20,0.95);
+--panel-border: rgba(255,255,255,0.15);
+--button-bg: rgba(255,255,255,0.2);
+--dot-bg: rgba(255,255,255,0.35);
+--dot-work: rgba(231,76,60,0.8);
+--dot-short: rgba(39,174,96,0.8);
+--dot-long: rgba(41,128,185,0.8);
+
+/* ----- BACKGROUND IMAGES ----- */
+--bg-image-work: url("assets/background-work.jpg");
+--bg-image-short: url("assets/background-short.jpg");
+--bg-image-long: url("assets/background-long.jpg");
+
+/* Decorative overlay */
+--decor-image: url("assets/decor-corner.png");
+
 }
 
-*{box-sizing:border-box;}
-body{
-  margin:0;
-  font-family:system-ui, -apple-system, sans-serif;
-  color:var(--text);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  height:100vh;
-  background:var(--bg-work);
-  transition:background 0.4s ease;
-}
-.app{
-  width:min(520px,92vw);
-  height:min(520px,92vh);
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  box-shadow:0 20px 60px rgba(0,0,0,0.25);
-  border-radius:20px;
-  padding:16px;
-  position:relative;
-}
-.header{
-  width:100%;
-  display:flex;
-  justify-content:space-between;
-  padding:10px 16px;
-}
-h1{font-size:clamp(16px,2.5vw,24px);margin:0;}
-.icon-btn{
-  background:var(--button-bg);
-  border:none;
-  color:var(--text);
-  padding:6px 10px;
-  border-radius:10px;
-  cursor:pointer;
-}
-.timer-container{
-  width:min(260px,70vw);
-  height:min(260px,70vw);
-  position:relative;
-}
-svg{width:100%;height:100%;transform:rotate(-90deg);}
-circle{fill:none;stroke-width:12;}
-#progress-bg{stroke:rgba(255,255,255,0.2);}
-#progress-ring{
-  stroke:var(--text);
-  stroke-linecap:round;
-  transition:stroke-dashoffset 1s linear;
-}
-#timeLabel{
-  position:absolute;
-  top:50%;
-  left:50%;
-  transform:translate(-50%,-50%);
-  font-size:clamp(24px,6vw,42px);
-  cursor:pointer;
-  user-select:none;
-}
-.controls{margin-top:10px;display:flex;gap:10px;}
-button{
-  padding:8px 14px;
-  font-size:14px;
-  border:none;
-  border-radius:12px;
-  cursor:pointer;
-  background:var(--button-bg);
-  color:var(--text);
-}
-.progressBar{
-  display:flex;
-  gap:8px;
-  margin-top:12px;
-  padding:10px;
-  border-radius:14px;
-  background:rgba(255,255,255,0.18);
-}
-.dot{
-  width:14px;height:14px;border-radius:50%;
-  background:var(--dot-bg);
-  cursor:pointer;
-  transition:transform 0.2s ease, background 0.2s ease;
-}
-.dot.work{background:var(--dot-work);}
-.dot.short{background:var(--dot-short);}
-.dot.long{background:var(--dot-long);}
-.dot.active{
-  transform:scale(1.25);
-  box-shadow:0 0 0 2px rgba(255,255,255,0.22);
-}
-.sessionIndicator{
-  margin-top:8px;
-  font-size:14px;
-  opacity:0.9;
+/* ==================================================
+   BASE LAYOUT
+================================================== */
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, sans-serif;
+  color: var(--text-color);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.4s ease;
+  overflow: hidden;
 }
 
-/* Settings panel */
-.settingsPanel, .presetPanel{
-  position:fixed;
-  top:50%;
-  left:50%;
-  transform:translate(-50%,-50%);
-  background:var(--panel-bg);
-  border:1px solid var(--panel-border);
-  border-radius:18px;
-  padding:16px;
-  width:min(460px,90vw);
-  display:none;
-  flex-direction:column;
-  gap:10px;
-  z-index:10;
-}
-.settingsPanel.open, .presetPanel.open{display:flex;}
-.settingsPanel input, .settingsPanel select, .presetPanel input, .presetPanel select{
-  width:100%;
-  padding:8px;
-  border-radius:10px;
-  border:1px solid rgba(255,255,255,0.2);
-  background:rgba(255,255,255,0.08);
-  color:white;
-}
-.settingsPanel label, .presetPanel label{font-size:14px;}
-.settingsPanel .row, .presetPanel .row{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-}
-.settingsPanel .rowFull, .presetPanel .rowFull{grid-column:span 2;}
-.closeBtn{align-self:flex-end;background:var(--button-bg);}
-
-/* Time input */
-.timeInputWrap{
-  display:flex;
-  gap:8px;
-  align-items:center;
-}
-.timeInputWrap input{
-  width:100%;
-  font-size:14px;
-  padding:8px;
+/* Background image layer */
+.bg-image {
+  position: fixed;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0.35;
+  z-index: -2;
 }
 
-/* Preset panel */
-.presetRow{
-  display:flex;
-  gap:8px;
-  align-items:center;
+/* Decorative overlay */
+.bg-decor {
+  position: fixed;
+  width: 300px;
+  height: 300px;
+  background-image: var(--decor-image);
+  background-size: contain;
+  background-repeat: no-repeat;
+  opacity: 0.15;
+  bottom: -40px;
+  right: -40px;
+  pointer-events: none;
+  z-index: -1;
 }
-.presetRow button{flex:1;}
+
+/* ==================================================
+   APP CONTAINER
+================================================== */
+
+.app {
+  width: min(520px, 92vw);
+  min-height: 520px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 22px;
+  padding: 24px;
+  backdrop-filter: blur(20px);
+  background: rgba(0,0,0,0.25);
+}
+
+/* Wide layout */
+@media (min-width: 900px) {
+  .app {
+    flex-direction: row;
+    gap: 40px;
+    width: min(900px, 90vw);
+  }
+}
+
+/* ==================================================
+   HEADER
+================================================== */
+
+.header {
+  position: absolute;
+  top: 16px;
+  left: 20px;
+  right: 20px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.icon-btn {
+  background: var(--button-bg);
+  border: none;
+  color: var(--text-color);
+  padding: 6px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+/* ==================================================
+   TIMER
+================================================== */
+
+.timer-container {
+  width: min(260px, 70vw);
+  height: min(260px, 70vw);
+  position: relative;
+}
+
+svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+circle {
+  fill: none;
+  stroke-width: 12;
+}
+
+#progress-bg {
+  stroke: rgba(255,255,255,0.2);
+}
+
+#progress-ring {
+  stroke: var(--text-color);
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s linear;
+}
+
+#timeLabel {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  font-size: clamp(24px,6vw,42px);
+  cursor: pointer;
+}
+
+/* ==================================================
+   CONTROLS
+================================================== */
+
+.controls {
+  margin-top: 20px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+button {
+  padding: 8px 16px;
+  border-radius: 14px;
+  border: none;
+  background: var(--button-bg);
+  color: var(--text-color);
+  cursor: pointer;
+}
+
+/* ==================================================
+   PANELS
+================================================== */
+
+.settingsPanel, .presetPanel {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  width: min(460px, 90vw);
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 20px;
+  padding: 20px;
+  display: none;
+  flex-direction: column;
+  gap: 14px;
+  z-index: 100;
+}
+
+.settingsPanel.open,
+.presetPanel.open {
+  display: flex;
+}
+
 </style>
 </head>
 <body>
 
+<div class="bg-image" id="bgImage"></div>
+<div class="bg-decor"></div>
+
 <div class="app">
+
   <div class="header">
     <h1 id="mode">Work</h1>
     <div>
@@ -187,642 +232,54 @@ button{
     </div>
   </div>
 
-  <div class="timer-container">
-    <svg viewBox="0 0 220 220">
-      <circle id="progress-bg" cx="110" cy="110" r="90"></circle>
-      <circle id="progress-ring" cx="110" cy="110" r="90"></circle>
-    </svg>
-    <div id="timeLabel" role="button" aria-label="Edit timer">25:00</div>
+  <div>
+    <div class="timer-container">
+      <svg viewBox="0 0 220 220">
+        <circle id="progress-bg" cx="110" cy="110" r="90"></circle>
+        <circle id="progress-ring" cx="110" cy="110" r="90"></circle>
+      </svg>
+      <div id="timeLabel">25:00</div>
+    </div>
+
+    <div class="controls">
+      <button id="startPauseBtn">Start</button>
+      <button onclick="skipSession()">Skip</button>
+      <button onclick="resetTimer()">Reset</button>
+    </div>
   </div>
 
-  <div class="controls">
-    <button id="startPauseBtn" onclick="handleUserAction(toggleTimer)">Start</button>
-    <button onclick="handleUserAction(skipSession)">Skip</button>
-    <button onclick="handleUserAction(resetTimer)">Reset</button>
-  </div>
-
-  <div class="sessionIndicator" id="sessionIndicator"></div>
-  <div class="progressBar" id="progressBar"></div>
-</div>
-
-<!-- MAIN SETTINGS -->
-<div class="settingsPanel" id="settingsPanel">
-  <button class="icon-btn closeBtn" onclick="toggleSettings(false)">✕</button>
-
-  <div class="row">
-    <label class="rowFull">
-      Theme:
-      <select id="themePreset">
-        <option value="default">Default (Pastel)</option>
-        <option value="valentines">Valentines</option>
-        <option value="earthy">Earthy</option>
-      </select>
-    </label>
-
-    <label class="rowFull">
-      Sound:
-      <select id="soundPreset">
-        <option value="none">No Sound</option>
-        <option value="classic">Classic Bell</option>
-        <option value="chime">Chime</option>
-        <option value="beep">Beep</option>
-      </select>
-    </label>
-
-    <label class="rowFull">
-      <input id="notifToggle" type="checkbox" checked> Notifications
-    </label>
-
-    <label class="rowFull">
-      <input id="autoStart" type="checkbox"> Auto start next session
-    </label>
-  </div>
-</div>
-
-<!-- PRESET PANEL -->
-<div class="presetPanel" id="presetPanel">
-  <button class="icon-btn closeBtn" onclick="togglePresetPanel(false)">✕</button>
-
-  <div class="presetRow">
-    <select id="presetSelect"></select>
-    <button onclick="createPreset()">New</button>
-  </div>
-  <div class="presetRow">
-    <button onclick="renamePreset()">Rename</button>
-    <button onclick="deletePreset()">Delete</button>
-    <button onclick="savePreset()">Save</button>
-  </div>
-
-  <div class="row">
-    <label class="rowFull">Work Duration
-      <div class="timeInputWrap">
-        <input id="workTime" placeholder="mm:ss" value="25:00" />
-      </div>
-    </label>
-
-    <label class="rowFull">Short Break Duration
-      <div class="timeInputWrap">
-        <input id="shortTime" placeholder="mm:ss" value="05:00" />
-      </div>
-    </label>
-
-    <label class="rowFull">Long Break Duration
-      <div class="timeInputWrap">
-        <input id="longTime" placeholder="mm:ss" value="15:00" />
-      </div>
-    </label>
-
-    <label>Sessions before long
-      <input id="intervalInput" type="number" min="1" value="4">
-    </label>
-  </div>
 </div>
 
 <script>
-/* -------------------------
-   THEME PRESETS
-------------------------- */
-const THEMES = {
-  default: {
-    "bg-work": "#e74c3c",
-    "bg-short": "#27ae60",
-    "bg-long": "#2980b9",
-    "text": "#ffffff",
-    "panel-bg": "rgba(20,20,20,0.95)",
-    "panel-border": "rgba(255,255,255,0.15)",
-    "button-bg": "rgba(255,255,255,0.2)",
-    "dot-bg": "rgba(255,255,255,0.35)",
-    "dot-work": "rgba(231, 76, 60, 0.8)",
-    "dot-short": "rgba(39, 174, 96, 0.8)",
-    "dot-long": "rgba(41, 128, 185, 0.8)"
-  },
-  valentines: {
-    "bg-work": "#ff3b6b",
-    "bg-short": "#ff8fb3",
-    "bg-long": "#ffffff",
-    "text": "#2b0b14",
-    "panel-bg": "rgba(255,255,255,0.9)",
-    "panel-border": "rgba(255,0,120,0.25)",
-    "button-bg": "rgba(255,0,120,0.2)",
-    "dot-bg": "rgba(255,255,255,0.5)",
-    "dot-work": "rgba(255, 40, 100, 0.9)",
-    "dot-short": "rgba(255, 150, 190, 0.9)",
-    "dot-long": "rgba(255, 255, 255, 0.9)"
-  },
-  earthy: {
-    "bg-work": "#8b5a2b",
-    "bg-short": "#5b8a3b",
-    "bg-long": "#3b6f8a",
-    "text": "#f5f1ea",
-    "panel-bg": "rgba(30, 25, 20, 0.92)",
-    "panel-border": "rgba(245,240,230,0.22)",
-    "button-bg": "rgba(245,240,230,0.15)",
-    "dot-bg": "rgba(245,240,230,0.35)",
-    "dot-work": "rgba(140, 90, 43, 0.9)",
-    "dot-short": "rgba(91, 138, 59, 0.9)",
-    "dot-long": "rgba(59, 111, 138, 0.9)"
+
+/* ==================================================
+   BACKGROUND SWITCHING
+================================================== */
+
+function updateBackground(mode){
+  const bg = document.getElementById("bgImage");
+
+  if(mode === "work"){
+    document.body.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--work-bg');
+    bg.style.backgroundImage = getComputedStyle(document.documentElement).getPropertyValue('--bg-image-work');
   }
-};
-
-/* -------------------------
-   STATE
-------------------------- */
-let timerInterval = null;
-let timeRemaining = 0;
-let totalTime = 0;
-let isRunning = false;
-
-let currentMode = "work";
-let workSessionsCompleted = 0;
-
-let timerSettings = null;
-let globalSettings = null;
-let presets = [];
-let activePresetId = null;
-
-const ring = document.getElementById("progress-ring");
-const radius = 90;
-const circumference = 2 * Math.PI * radius;
-ring.style.strokeDasharray = circumference;
-ring.style.strokeDashoffset = circumference;
-
-const mode = document.getElementById("mode");
-const startPauseBtn = document.getElementById("startPauseBtn");
-
-const workTime = document.getElementById("workTime");
-const shortTime = document.getElementById("shortTime");
-const longTime = document.getElementById("longTime");
-const intervalInput = document.getElementById("intervalInput");
-
-const themePreset = document.getElementById("themePreset");
-const autoStart = document.getElementById("autoStart");
-const notifToggle = document.getElementById("notifToggle");
-const soundPreset = document.getElementById("soundPreset");
-
-const progressBar = document.getElementById("progressBar");
-const settingsPanel = document.getElementById("settingsPanel");
-const presetPanel = document.getElementById("presetPanel");
-const timeLabel = document.getElementById("timeLabel");
-const sessionIndicator = document.getElementById("sessionIndicator");
-const presetSelect = document.getElementById("presetSelect");
-
-let audioCtx = null;
-function initAudio(){
-  if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-}
-
-/* -------------------------
-   STORAGE
-------------------------- */
-function uuid(){
-  return Math.random().toString(16).slice(2) + "-" + Date.now().toString(16);
-}
-
-function loadStorage(){
-  const data = JSON.parse(localStorage.getItem("pomodoroApp")) || {};
-  presets = data.presets || [];
-  activePresetId = data.activePresetId || null;
-  timerSettings = data.timerSettings || null;
-  globalSettings = data.globalSettings || null;
-
-  if(!presets.length){
-    const defaultPreset = {
-      id: uuid(),
-      name: "Default",
-      work: 25*60,
-      short: 5*60,
-      long: 15*60,
-      interval: 4
-    };
-    presets.push(defaultPreset);
-    activePresetId = defaultPreset.id;
+  else if(mode === "short"){
+    document.body.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--short-bg');
+    bg.style.backgroundImage = getComputedStyle(document.documentElement).getPropertyValue('--bg-image-short');
   }
-
-  if(!timerSettings){
-    timerSettings = {...presets[0]};
-  }
-
-  if(!globalSettings){
-    globalSettings = {
-      autoStart:false,
-      soundPreset:"classic",
-      notifications:true,
-      theme:"default"
-    };
+  else {
+    document.body.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--long-bg');
+    bg.style.backgroundImage = getComputedStyle(document.documentElement).getPropertyValue('--bg-image-long');
   }
 }
 
-function saveStorage(){
-  localStorage.setItem("pomodoroApp", JSON.stringify({
-    presets,
-    activePresetId,
-    timerSettings,
-    globalSettings
-  }));
-}
+/* ==================================================
+   REMOVE NOTIFICATIONS COMPLETELY
+================================================== */
+/* All notification logic removed intentionally */
 
-/* -------------------------
-   PRESETS (TIMERS ONLY)
-------------------------- */
-function secondsFromMMSS(str){
-  const parts = str.split(":").map(x=>Number(x.trim()));
-  if(parts.length!==2||parts.some(isNaN)) return null;
-  const [m,s]=parts;
-  if(m<0||s<0||s>=60) return null;
-  return m*60+s;
-}
-function mmssFromSeconds(sec){
-  const m=String(Math.floor(sec/60)).padStart(2,"0");
-  const s=String(sec%60).padStart(2,"0");
-  return `${m}:${s}`;
-}
+updateBackground("work");
 
-function getTimersFromInputs(){
-  return {
-    work: secondsFromMMSS(workTime.value) ?? timerSettings.work,
-    short: secondsFromMMSS(shortTime.value) ?? timerSettings.short,
-    long: secondsFromMMSS(longTime.value) ?? timerSettings.long,
-    interval: Math.max(1, Number(intervalInput.value) || timerSettings.interval)
-  };
-}
-
-function applyTimerSettings(t){
-  timerSettings = {...timerSettings, ...t};
-  setTimerInputs();
-  setTimeForMode();
-  renderProgressBar();
-  updateSessionIndicator();
-}
-
-function setTimerInputs(){
-  workTime.value = mmssFromSeconds(timerSettings.work);
-  shortTime.value = mmssFromSeconds(timerSettings.short);
-  longTime.value = mmssFromSeconds(timerSettings.long);
-  intervalInput.value = timerSettings.interval;
-}
-
-function refreshPresetList(){
-  presetSelect.innerHTML = "";
-  presets.forEach(p=>{
-    const opt=document.createElement("option");
-    opt.value=p.id;
-    opt.textContent=p.name;
-    presetSelect.appendChild(opt);
-  });
-  presetSelect.value=activePresetId;
-}
-
-function loadPreset(presetId){
-  const preset = presets.find(p=>p.id===presetId);
-  if(!preset) return;
-  activePresetId = presetId;
-  applyTimerSettings(preset);
-  saveStorage();
-}
-
-/* -------------------------
-   THEME
-------------------------- */
-function applyTheme(themeName){
-  const theme = THEMES[themeName] || THEMES.default;
-  const root=document.documentElement;
-  Object.entries(theme).forEach(([k,v])=>root.style.setProperty(`--${k}`,v));
-  setTheme();
-}
-function setTheme(){
-  const body=document.body;
-  const root=document.documentElement;
-  if(currentMode==="work") body.style.backgroundColor=getComputedStyle(root).getPropertyValue("--bg-work");
-  if(currentMode==="short") body.style.backgroundColor=getComputedStyle(root).getPropertyValue("--bg-short");
-  if(currentMode==="long") body.style.backgroundColor=getComputedStyle(root).getPropertyValue("--bg-long");
-}
-
-/* -------------------------
-   AUDIO
-------------------------- */
-function playTone(freq,duration=0.15){
-  initAudio();
-  if(!audioCtx) return;
-  const osc=audioCtx.createOscillator();
-  const gain=audioCtx.createGain();
-  osc.connect(gain);
-  gain.connect(audioCtx.destination);
-  osc.frequency.value=freq;
-  osc.type="sine";
-  gain.gain.setValueAtTime(0.0001,audioCtx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.3,audioCtx.currentTime+0.01);
-  gain.gain.exponentialRampToValueAtTime(0.0001,audioCtx.currentTime+duration);
-  osc.start(audioCtx.currentTime);
-  osc.stop(audioCtx.currentTime+duration);
-}
-
-/* -------------------------
-   DISPLAY
-------------------------- */
-function updateDisplay(){
-  const minutes=Math.floor(timeRemaining/60);
-  const seconds=timeRemaining%60;
-  const formatted=`${String(minutes).padStart(2,"0")}:${String(seconds).padStart(2,"0")}`;
-  timeLabel.textContent=formatted;
-  document.title=formatted+" - "+mode.textContent;
-
-  if(totalTime>0){
-    const progress=timeRemaining/totalTime;
-    ring.style.strokeDashoffset=circumference*(1-progress);
-  }
-}
-function updateSessionIndicator(){
-  sessionIndicator.textContent=`Session ${workSessionsCompleted+1} / ${timerSettings.interval}`;
-}
-
-/* -------------------------
-   TIMER
-------------------------- */
-function handleUserAction(action){
-  initAudio();
-  action();
-}
-function toggleTimer(){ isRunning?pauseTimer():startTimer(); }
-
-function startTimer(){
-  if(isRunning) return;
-  isRunning=true;
-  startPauseBtn.textContent="Pause";
-  timerInterval=setInterval(()=>{
-    if(timeRemaining>0){
-      timeRemaining--;
-      updateDisplay();
-    }else{
-      pauseTimer();
-      nextSession(true);
-    }
-  },1000);
-}
-function pauseTimer(){
-  isRunning=false;
-  startPauseBtn.textContent="Start";
-  clearInterval(timerInterval);
-}
-function resetTimer(){
-  pauseTimer();
-  setTimeForMode();
-  renderProgressBar();
-}
-function resetToStart(){
-  pauseTimer();
-  currentMode="work";
-  workSessionsCompleted=0;
-  setTimeForMode();
-  renderProgressBar();
-}
-function setTimeForMode(){
-  if(currentMode==="work"){
-    timeRemaining=timerSettings.work;
-    mode.textContent="Work";
-  }else if(currentMode==="short"){
-    timeRemaining=timerSettings.short;
-    mode.textContent="Short Break";
-  }else{
-    timeRemaining=timerSettings.long;
-    mode.textContent="Long Break";
-  }
-  totalTime=timeRemaining;
-  setTheme();
-  updateDisplay();
-}
-function skipSession(){
-  pauseTimer();
-  nextSession(false);
-}
-function computeNextMode(){
-  if(currentMode==="work"){
-    workSessionsCompleted++;
-    if(workSessionsCompleted>=timerSettings.interval){
-      workSessionsCompleted=timerSettings.interval;
-      return "long";
-    }
-    return "short";
-  }else{
-    if(currentMode==="long") workSessionsCompleted=0;
-    return "work";
-  }
-}
-function nextSession(endedNaturally=true, forcedMode=null){
-  const nextMode = forcedMode || computeNextMode();
-  if(endedNaturally) playModeSound(nextMode);
-
-  currentMode=nextMode;
-  setTimeForMode();
-  renderProgressBar();
-  updateSessionIndicator();
-
-  if(globalSettings.notifications) notifyUser();
-  if(globalSettings.autoStart) startTimer();
-}
-
-/* -------------------------
-   SOUND + NOTIFICATIONS
-------------------------- */
-function playModeSound(mode){
-  const preset = globalSettings.soundPreset;
-  if(preset==="none") return;
-
-  if(preset==="classic"){
-    if(mode==="work") playTone(600,0.25);
-    else if(mode==="short") playTone(900,0.15);
-    else playTone(500,0.35);
-  }else if(preset==="chime"){
-    if(mode==="work") playTone(1000,0.2);
-    else if(mode==="short") playTone(1200,0.12);
-    else playTone(800,0.3);
-  }else if(preset==="beep"){
-    if(mode==="work") playTone(700,0.1);
-    else if(mode==="short") playTone(900,0.08);
-    else playTone(600,0.12);
-  }
-}
-function notifyUser(){
-  if("Notification" in window && Notification.permission==="granted"){
-    new Notification(mode.textContent + " started");
-  }
-}
-if("Notification" in window) Notification.requestPermission();
-
-/* -------------------------
-   PROGRESS BAR
-------------------------- */
-function buildCycle(){
-  const steps=[];
-  for(let i=0;i<timerSettings.interval;i++){
-    steps.push("work");
-    steps.push(i===timerSettings.interval-1 ? "long":"short");
-  }
-  return steps;
-}
-function currentIndex(){
-  const steps=buildCycle();
-  if(currentMode==="work") return workSessionsCompleted*2;
-  if(currentMode==="short") return (workSessionsCompleted*2)-1;
-  if(currentMode==="long") return (workSessionsCompleted*2)-1;
-  return 0;
-}
-function renderProgressBar(){
-  const steps=buildCycle();
-  progressBar.innerHTML="";
-  const index=Math.max(0,Math.min(currentIndex(),steps.length-1));
-  steps.forEach((step,i)=>{
-    const dot=document.createElement("div");
-    dot.classList.add("dot",step);
-    if(i===index) dot.classList.add("active");
-    dot.onclick=()=>{
-      pauseTimer();
-      jumpToIndex(i);
-    };
-    progressBar.appendChild(dot);
-  });
-}
-function jumpToIndex(index){
-  const steps=buildCycle();
-  if(index<0||index>=steps.length) return;
-  const stepMode=steps[index];
-  if(stepMode==="work") workSessionsCompleted=Math.floor(index/2);
-  else workSessionsCompleted=Math.floor((index+1)/2);
-  currentMode=stepMode;
-  setTimeForMode();
-  renderProgressBar();
-}
-
-/* -------------------------
-   SETTINGS PANEL
-------------------------- */
-function toggleSettings(force){
-  settingsPanel.classList.toggle("open", force ?? !settingsPanel.classList.contains("open"));
-}
-function togglePresetPanel(force){
-  presetPanel.classList.toggle("open", force ?? !presetPanel.classList.contains("open"));
-}
-
-document.addEventListener("click",(e)=>{
-  if(!settingsPanel.contains(e.target) && !presetPanel.contains(e.target) && !e.target.closest(".icon-btn")){
-    toggleSettings(false);
-    togglePresetPanel(false);
-  }
-});
-
-/* -------------------------
-   PRESET MANAGEMENT
-------------------------- */
-function createPreset(){
-  const name = prompt("Preset name:");
-  if(!name) return;
-  const newPreset={
-    id: uuid(),
-    name,
-    ...getTimersFromInputs()
-  };
-  presets.push(newPreset);
-  activePresetId=newPreset.id;
-  refreshPresetList();
-  loadPreset(activePresetId);
-}
-function renamePreset(){
-  const preset=presets.find(p=>p.id===activePresetId);
-  if(!preset) return;
-  const name=prompt("Rename preset:", preset.name);
-  if(!name) return;
-  preset.name=name;
-  refreshPresetList();
-  saveStorage();
-}
-function deletePreset(){
-  if(presets.length<=1) return alert("At least one preset must remain.");
-  presets=presets.filter(p=>p.id!==activePresetId);
-  activePresetId=presets[0].id;
-  refreshPresetList();
-  loadPreset(activePresetId);
-}
-function savePreset(){
-  const preset=presets.find(p=>p.id===activePresetId);
-  if(!preset) return;
-  Object.assign(preset, getTimersFromInputs());
-  saveStorage();
-  alert("Preset saved.");
-}
-
-/* -------------------------
-   INSTANT UPDATE
-------------------------- */
-function wireInstantUpdate(){
-  const timerInputs=[workTime, shortTime, longTime, intervalInput];
-  timerInputs.forEach(el=>el.addEventListener("change",()=>{
-    applyTimerSettings(getTimersFromInputs());
-  }));
-
-  const globalInputs=[themePreset, soundPreset, notifToggle, autoStart];
-  globalInputs.forEach(el=>el.addEventListener("change",()=>{
-    globalSettings = {
-      ...globalSettings,
-      theme: themePreset.value,
-      soundPreset: soundPreset.value,
-      notifications: notifToggle.checked,
-      autoStart: autoStart.checked
-    };
-    applyTheme(globalSettings.theme);
-    saveStorage();
-  }));
-
-  presetSelect.addEventListener("change", ()=>loadPreset(presetSelect.value));
-}
-
-/* -------------------------
-   EDIT TIMER
-------------------------- */
-timeLabel.addEventListener("click",()=>{
-  pauseTimer();
-  const current=formatTime(timeRemaining);
-  timeLabel.innerHTML=`<input id="editTimer" value="${current}" />`;
-  const editInput=document.getElementById("editTimer");
-  editInput.focus();
-  editInput.select();
-  editInput.addEventListener("keydown",(e)=>{
-    if(e.key==="Enter") applyEdit(editInput.value);
-    if(e.key==="Escape") cancelEdit();
-  });
-  editInput.addEventListener("blur",()=>applyEdit(editInput.value));
-});
-function formatTime(seconds){
-  const m=String(Math.floor(seconds/60)).padStart(2,"0");
-  const s=String(seconds%60).padStart(2,"0");
-  return `${m}:${s}`;
-}
-function applyEdit(value){
-  const parts=value.split(":").map(v=>Number(v.trim()));
-  if(parts.length!==2||parts.some(v=>!Number.isFinite(v))){
-    cancelEdit();
-    return;
-  }
-  const [m,s]=parts;
-  const newSeconds=Math.max(0,m*60+Math.min(59,Math.max(0,s)));
-  timeRemaining=newSeconds;
-  totalTime=Math.max(totalTime,timeRemaining);
-  updateDisplay();
-}
-function cancelEdit(){ updateDisplay(); }
-
-/* -------------------------
-   INIT
-------------------------- */
-loadStorage();
-refreshPresetList();
-loadPreset(activePresetId);
-
-themePreset.value=globalSettings.theme;
-soundPreset.value=globalSettings.soundPreset;
-notifToggle.checked=globalSettings.notifications;
-autoStart.checked=globalSettings.autoStart;
-
-wireInstantUpdate();
-applyTheme(globalSettings.theme);
 </script>
 </body>
 </html>
